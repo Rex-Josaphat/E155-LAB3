@@ -2,7 +2,7 @@
 // jngoga@g.hmc.edu
 // 8/28/2025
 
-// This codes represents modules to test Development Board hardware by lighting on-board LEDs and showing oscillation
+// This codebase represents modules to test Development Board hardware by lighting on-board LEDs and showing oscillation
 // as well as operating a 7-segment LED display, all using 4 DIP switches installed on the board
 
 
