@@ -2,21 +2,25 @@
 // jngoga@g.hmc.edu
 // 8/29/2025
 
-// This codebase represents the testbench to simulate and determine if the codebase promps the hardware to react as expected
+// This codebase represents the testbench to simulate and determine if the codebase prompts the hardware to react as desired/expected
 
 module testbench();
 		logic clk, reset;
-		logic n, s ,e, w, win, die;
-		logic [1:0] expected;
+		logic [3:0] swDIP;
+		// logic [2:0] BoardLed, BoardLed_expected;
+		// logic [6:0] SegDisp, SegDisp_expected;
+		logic [2:0] BoardLed;
+		logic [6:0] SegDisp;
+		logic [9:0] expected;
 		logic [31:0] vectornum, errors;
-		logic [5:0] testvectors[10000:0];
+		logic [13:0] testvectors[10000:0];
        
         // instantiate device under test
-        adventure dut(clk, reset, n, s ,e, w, win, die);
+        top dut(reset, swDIP, BoardLed, SegDisp);
 
         // generate clock
         always
-        	begin
+        	begin	
         		clk=1; #5; 
         		clk=0; #5;
         	end
@@ -24,7 +28,7 @@ module testbench();
         // at start of test, load vectors and pulse reset
         initial
         	begin
-        		$readmemb("adventure.tv", testvectors);
+        		$readmemb("lab1SIM.tv", testvectors);
 
     			vectornum = 0; 
     			errors = 0; 
@@ -37,29 +41,24 @@ module testbench();
         always @(posedge clk)
         	begin
         		#1; 
-        		{n, s, e, w, expected} = testvectors[vectornum];
+        		{swDIP, expected} = testvectors[vectornum];
         	end
 
         // check results on falling edge of clk
         always @(negedge clk)
 
         	if (~reset) begin // skip during reset
-        		if ({win, die} !== expected) begin // check result
-        			$display("Error: inputs = %b", {n, s, e, w});
-        			$display(" outputs = %b %b (%b expected)",
-        			win, die, expected);
+        		if ({BoardLed, SegDisp} !== expected) begin // check result
+        			$display("Error: inputs = %b", {swDIP});
+        			$display(" outputs = %b %b %b %b %b %b %b %b %b %b (%b expected)",
+        			BoardLed, SegDisp, expected);
+					
         			errors = errors + 1;
         		end
 
         		vectornum = vectornum + 1;
 
-        		// Set Rest after game ends
-        		if (win || die) begin
-        			reset = 1; #1;
-        			reset = 0;
-        		end
-
-        		if (testvectors[vectornum] === 6'bx) begin
+        		if (testvectors[vectornum] === 14'bx) begin
         			$display("%d tests completed with %d errors", vectornum, errors);
         			$stop;
         		end
