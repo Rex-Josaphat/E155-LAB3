@@ -7,11 +7,8 @@
 module testbench();
 		logic clk, reset;
 		logic [3:0] swDIP;
-		// logic [2:0] BoardLed, BoardLed_expected;
-		// logic [6:0] SegDisp, SegDisp_expected;
-		logic [2:0] BoardLed;
-		logic [6:0] SegDisp;
-		logic [9:0] expected;
+		logic [2:0] BoardLed, BoardLedExpected;
+		logic [6:0] SegDisp, SegDispExpected;
 		logic [31:0] vectornum, errors;
 		logic [13:0] testvectors[10000:0];
        
@@ -38,23 +35,27 @@ module testbench();
     		end
 
         // apply test vectors on rising edge of clk
-        always @(posedge clk)
+        always @(posedge clk) begin
         	begin
-        		#1; 
-        		{swDIP, expected} = testvectors[vectornum];
+        		#1; {swDIP, BoardLedExpected, SegDispExpected} = testvectors[vectornum];
         	end
+		end
 
         // check results on falling edge of clk
-        always @(negedge clk)
+        always @(negedge clk) begin
 
         	if (~reset) begin // skip during reset
-        		if ({BoardLed, SegDisp} !== expected) begin // check result
+        		if (BoardLed !== BoardLedExpected) begin // check on-board LED result
         			$display("Error: inputs = %b", {swDIP});
-        			$display(" outputs = %b %b %b %b %b %b %b %b %b %b (%b expected)",
-        			BoardLed, SegDisp, expected);
-					
+        			$display(" outputs = %b  (%b expected)", BoardLed, BoardLedExpected);
         			errors = errors + 1;
-        		end
+        		end 
+				
+				if (BoardLed !== BoardLedExpected) begin // check 7-segment display result
+        			$display("Error: inputs = %b", {swDIP});
+        			$display(" outputs = %b  (%b expected)", SegDisp, SegDispExpected);
+        			errors = errors + 1;
+				end
 
         		vectornum = vectornum + 1;
 
@@ -63,4 +64,5 @@ module testbench();
         			$stop;
         		end
         	end
+		end
 endmodule
