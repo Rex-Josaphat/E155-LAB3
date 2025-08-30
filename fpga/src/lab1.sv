@@ -77,12 +77,12 @@ module Seven_SegDisp(
                 4'h7 : SegDisp = 7'b1111000;
                 4'h8 : SegDisp = 7'b0000000;
                 4'h9 : SegDisp = 7'b0011000;
-                4'hA : SegDisp = 7'b0001000;
-                4'hB : SegDisp = 7'b0000011;
-                4'hC : SegDisp = 7'b1000110;
-                4'hD : SegDisp = 7'b0100001;
-                4'hE : SegDisp = 7'b0000110;
-                4'hF : SegDisp = 7'b0001110;
+                4'ha : SegDisp = 7'b0001000;
+                4'hb : SegDisp = 7'b0000011;
+                4'hc : SegDisp = 7'b1000110;
+                4'hd : SegDisp = 7'b0100001;
+                4'he : SegDisp = 7'b0000110;
+                4'hf : SegDisp = 7'b0001110;
 
                 default: SegDisp = 7'b1111111; // Default OFF
             endcase            
