@@ -15,9 +15,12 @@ module top (
 
         // Run output to On-Board Leds
         OnBoardLEDCtrl OnBrdCtrl (reset, swDIP, BoardLed);
-
+        
         // Run output to 7-segment Display
-        SevenSegDispCtrl 7Disp (reset, swDIP, SegDisp);
+        SevenSegDispCtrl DispCtrl (reset, swDIP, SegDisp);
+        
+         
+
 
 endmodule
 
