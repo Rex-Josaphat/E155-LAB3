@@ -51,7 +51,7 @@ module testbench();
         			errors = errors + 1;
         		end 
 				
-				if (BoardLed !== BoardLedExpected) begin // check 7-segment display result
+				if (SegDisp !== SegDispExpected) begin // check 7-segment display result
         			$display("Error: inputs = %b", {swDIP});
         			$display(" outputs = %b  (%b expected)", SegDisp, SegDispExpected);
         			errors = errors + 1;
