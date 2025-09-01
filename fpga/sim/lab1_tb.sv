@@ -25,7 +25,7 @@ module testbench();
         // at start of test, load vectors and pulse reset
         initial
         	begin
-        		$readmemb("lab1_tv.tv", testvectors);
+        		$readmemb("lab1_tv.txt", testvectors);
 
     			vectornum = 0; 
     			errors = 0; 
