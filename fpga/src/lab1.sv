@@ -37,20 +37,25 @@ module OnBoardLEDCtrl(
 
         // Blink LED3 at 2.4Hz
         logic int_osc;
+        logic led_pow; // For tracking BoardLed[2] state
         logic [24:0] counter;
 
         // Internal high-speed oscillator
-        HSOSC #(.CLKHF_DIV(2'b01)) 
-            hf_osc (.CLKHFPU(1'b1), .CLKHFEN(1'b1), .CLKHF(int_osc));
+        HSOSC hf_osc (.CLKHFPU(1'b1), .CLKHFEN(1'b1), .CLKHF(int_osc));
 
         // Counter
         always_ff @(posedge int_osc) begin
-            if(reset == 0)  counter <= 0;
-            else            counter <= counter + 2; // Set counter increment to 2 gives ~2.8Hz
-        end
+            if(reset == 0) begin
+                counter <= 0; led_pow <= 0;
+            end
+            
+            else if (counter == 10000000) begin
+                counter <= 0;
+                BoardLed[2] <= ~led_pow; // Assign LED output
+            end
 
-        // Assign LED output
-        assign BoardLed[2] = counter[24];
+            else counter <= counter + 1;
+        end
 endmodule
 
 
