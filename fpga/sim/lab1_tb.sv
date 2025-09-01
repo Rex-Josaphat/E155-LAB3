@@ -25,7 +25,7 @@ module testbench();
         // at start of test, load vectors and pulse reset
         initial
         	begin
-        		$readmemb("lab1SIM.tv", testvectors);
+        		$readmemb("lab1_tv.tv", testvectors);
 
     			vectornum = 0; 
     			errors = 0; 
@@ -40,13 +40,6 @@ module testbench();
         		#1; {swDIP, BoardLedExpected, SegDispExpected} = testvectors[vectornum];
         	end
 		end
-
-		initial
- 			begin
- 			  // Create dumpfile for signals
- 			  $dumpfile("lab1_tb.vcd");
- 			  $dumpvars(0, lab1_tb);
- 			end
 
         // check results on falling edge of clk
         always @(negedge clk) begin
