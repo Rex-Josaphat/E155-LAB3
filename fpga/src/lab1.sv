@@ -18,10 +18,6 @@ module top (
         
         // Run output to 7-segment Display
         SevenSegDispCtrl DispCtrl (reset, swDIP, SegDisp);
-        
-         
-
-
 endmodule
 
 
@@ -48,7 +44,7 @@ module OnBoardLEDCtrl(
             hf_osc (.CLKHFPU(1'b1), .CLKHFEN(1'b1), .CLKHF(int_osc));
 
         // Counter
-        always_ff @(posedge int_osc, posedge reset) begin
+        always_ff @(posedge int_osc) begin
             if(reset == 0)  counter <= 0;
             else            counter <= counter + 2; // Set counter increment to 2 gives ~2.8Hz
         end
