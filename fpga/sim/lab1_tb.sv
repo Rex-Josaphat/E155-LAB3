@@ -41,6 +41,13 @@ module testbench();
         	end
 		end
 
+		initial
+ 			begin
+ 			  // Create dumpfile for signals
+ 			  $dumpfile("lab1_tb.vcd");
+ 			  $dumpvars(0, lab1_tb);
+ 			end
+
         // check results on falling edge of clk
         always @(negedge clk) begin
 
