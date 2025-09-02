@@ -13,7 +13,7 @@ module sevenSegDispCtrl_tb();
 		logic [10:0] testvectors[10000:0];
        
         // instantiate device under test
-        sevenSegDispCtrl dut(reset, swDIP, SegDisp);
+        sevenSegDispCtrl dut(swDIP, SegDisp);
 
         // generate clock
         always
