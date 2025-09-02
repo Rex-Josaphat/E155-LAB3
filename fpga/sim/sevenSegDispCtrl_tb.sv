@@ -1,20 +1,19 @@
 // Josaphat Ngoga
 // jngoga@g.hmc.edu
-// 8/29/2025
+// 9/1/2025
 
-// This codebase represents the testbench to simulate and determine if the codebase prompts the hardware to react as desired/expected
+// This is a testbench to simulate and determine if the 7-segment display reacts as desired/expected
 
-`timescale 1ns/1ps // Defines time unit as 1ns and time precision as 1ps
-module testbench();
+`timescale 1ns/1ns // Defines time unit as 1ns and time precision as 1ns
+module sevenSegDispCtrl_tb();
 		logic clk, reset;
 		logic [3:0] swDIP;
-		logic [2:0] BoardLed, BoardLedExpected;
 		logic [6:0] SegDisp, SegDispExpected;
 		logic [31:0] vectornum, errors;
-		logic [13:0] testvectors[10000:0];
+		logic [10:0] testvectors[10000:0];
        
         // instantiate device under test
-        top dut(reset, swDIP, BoardLed, SegDisp);
+        sevenSegDispCtrl dut(reset, swDIP, SegDisp);
 
         // generate clock
         always
@@ -26,7 +25,7 @@ module testbench();
         // at start of test, load vectors and pulse reset
         initial
         	begin
-        		$readmemb("lab1_tv.txt", testvectors);
+        		$readmemb("sevenSegDispCtrl_tv.tv", testvectors);
 
     			vectornum = 0; 
     			errors = 0; 
@@ -38,7 +37,7 @@ module testbench();
         // apply test vectors on rising edge of clk
         always @(posedge clk) begin
         	begin
-        		#1; {swDIP, BoardLedExpected, SegDispExpected} = testvectors[vectornum];
+        		#1; {swDIP, SegDispExpected} = testvectors[vectornum];
         	end
 		end
 
@@ -46,12 +45,6 @@ module testbench();
         always @(negedge clk) begin
 
         	if (~reset) begin // skip during reset
-        		if (BoardLed !== BoardLedExpected) begin // check on-board LED result
-        			$display("Error: inputs = %b", {swDIP});
-        			$display(" outputs = %b  (%b expected)", BoardLed, BoardLedExpected);
-        			errors = errors + 1;
-        		end 
-				
 				if (SegDisp !== SegDispExpected) begin // check 7-segment display result
         			$display("Error: inputs = %b", {swDIP});
         			$display(" outputs = %b  (%b expected)", SegDisp, SegDispExpected);
@@ -60,7 +53,7 @@ module testbench();
 
         		vectornum = vectornum + 1;
 
-        		if (testvectors[vectornum] === 14'bx) begin
+        		if (testvectors[vectornum] === 11'bx) begin
         			$display("%d tests completed with %d errors", vectornum, errors);
         			$stop;
         		end
