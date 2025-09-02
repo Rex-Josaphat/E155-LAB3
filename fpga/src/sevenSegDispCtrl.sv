@@ -6,7 +6,6 @@
 // The interpreted hex value will be diplayed accurately using the segments of the diplay
 
 module sevenSegDispCtrl(
-        input logic reset,
         input logic [3:0] swDIP,
         output logic [6:0] SegDisp);
 
