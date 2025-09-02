@@ -21,7 +21,7 @@ module sevenSegDispCtrl(
                 4'h6 : SegDisp = 7'b0000010;
                 4'h7 : SegDisp = 7'b1111000;
                 4'h8 : SegDisp = 7'b0000000;
-                4'h9 : SegDisp = 7'b0011000;
+                4'h9 : SegDisp = 7'b0010000;
                 4'ha : SegDisp = 7'b0001000;
                 4'hb : SegDisp = 7'b0000011;
                 4'hc : SegDisp = 7'b1000110;
