@@ -32,9 +32,11 @@ module onBoardLEDCtrl (
             
             else if (counter == 10000000) begin // Counter to 10^7 ticks
                 counter <= 0;
-                BoardLed[2] <= ~led_pow; // Assign LED output
+                led_pow <= ~led_pow; 
             end
 
             else counter <= counter + 1;
         end
+
+        assign BoardLed[2] = led_pow; // Toggle LED
 endmodule
