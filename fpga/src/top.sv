@@ -1,6 +1,6 @@
 // Josaphat Ngoga
 // jngoga@g.hmc.edu
-// 9/1/2025
+// 9/2/2025
 
 // This is the top module for this lab. It takes in reset and switch inputs 
 // and proceeds to instantiate the module for controlling the on-board lEDs
