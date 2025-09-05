@@ -17,7 +17,7 @@ module ledControl(
         logic int_osc;
         logic seg_en; // Selector for which segment goes on
         logic [24:0] counter;
-        logic [7:0] swDip; // Captures all available switch states from the 2 4-DIP switch blocks
+        logic [7:0] swDIP; // Captures all available switch states from the 2 4-DIP switch blocks
 
         // Sum of displayed digits
         segSum = sw1 + sw2;
