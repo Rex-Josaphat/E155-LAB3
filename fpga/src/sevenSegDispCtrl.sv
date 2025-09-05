@@ -1,6 +1,6 @@
 // Josaphat Ngoga
 // jngoga@g.hmc.edu
-// 9/1/2025
+// 9/5/2025
 
 // This Module controlls the 7 segment display in response to the states of the 4 DIP switches.
 // The interpreted hex value will be diplayed accurately using the segments of the diplay
