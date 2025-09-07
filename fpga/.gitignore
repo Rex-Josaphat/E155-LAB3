@@ -31,6 +31,8 @@ impl*/
 
 # ignore simulation output of ModelSim
 wlf*
+mpf*
+*.mpf
 *.wlf
 *.vstf
 *.ucdb
