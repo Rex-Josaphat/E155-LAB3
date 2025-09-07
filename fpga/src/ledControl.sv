@@ -20,7 +20,7 @@ module ledControl(
         logic [7:0] swDIP; // Captures all available switch states from the 2 4-DIP switch blocks
 
         // Sum of displayed digits
-        segSum = sw1 + sw2;
+        assign segSum = sw1 + sw2;
 
         ////////////// Time-multiplexing logic ///////////////
     
@@ -42,19 +42,20 @@ module ledControl(
         end
 
         //////////////// 7-segment display input and enabler logic //////////////////
-        assign swDIP = {sw2, sw1}
+        assign swDIP = {sw2, sw1};
 
-        if (seg_en == 0) begin
-            assign onSeg = 2'b10; // Turn on left segment
-            assign sevenSegIn = swDIP[0]; // Choose on-board DIP switch inputs
-        
-        end else if (seg_en == 1) begin
-            assign onSeg = 2'b01; // Turn on right segment
-            assign sevenSegIn = swDIP[1]; // Choose Breadboard DIP switch inputs
+        always_comb begin
+            if (seg_en == 0) begin
+                onSeg = 2'b10; // Turn on left segment
+                sevenSegIn = swDIP[0]; // Choose on-board DIP switch inputs
 
-        end else begin
-            assign onSeg = 2'b00; // Turn off all segments
-            assign sevenSegIn = 4'b0000; // Default input to zero                        
+            end else if (seg_en == 1) begin
+                onSeg = 2'b01; // Turn on right segment
+                sevenSegIn = swDIP[1]; // Choose Breadboard DIP switch inputs
+
+            end else begin
+                onSeg = 2'b00; // Turn off all segments
+                sevenSegIn = 4'b0000; // Default input to zero                        
+            end
         end
-
 endmodule
