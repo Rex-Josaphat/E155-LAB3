@@ -17,7 +17,6 @@ module ledControl(
         logic int_osc;
         logic seg_en; // Selector for which segment goes on
         logic [24:0] counter;
-        logic [7:0] swDIP; // Captures all available switch states from the 2 4-DIP switch blocks
 
         // Sum of displayed digits
         assign segSum = sw1 + sw2;
@@ -35,23 +34,21 @@ module ledControl(
             
             else if (counter == 200_000) begin // Switch every 2*10^5 cycles (2 ms)
                 counter <= 0;
-                seg_en <= seg_en + 1; 
+                seg_en <= ~seg_en; 
             end
 
             else counter <= counter + 1;
         end
 
         //////////////// 7-segment display input and enabler logic //////////////////
-        assign swDIP = {sw2, sw1};
-
         always_comb begin
             if (seg_en == 0) begin
                 onSeg = 2'b10; // Turn on left segment
-                sevenSegIn = swDIP[0]; // Choose on-board DIP switch inputs
+                sevenSegIn = sw1; // Choose on-board DIP switch inputs
 
             end else if (seg_en == 1) begin
                 onSeg = 2'b01; // Turn on right segment
-                sevenSegIn = swDIP[1]; // Choose Breadboard DIP switch inputs
+                sevenSegIn = sw2; // Choose Breadboard DIP switch inputs
 
             end else begin
                 onSeg = 2'b00; // Turn off all segments
