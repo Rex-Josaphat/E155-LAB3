@@ -11,10 +11,12 @@ module top(
         input logic [3:0] sw1, sw2,
         output logic [1:0] onSeg,
         output logic [4:0] segSum,
-        output logic [3:0] sevenSegIn;
         output logic [6:0] segDisp);
+
+        // Internal Logic
+        logic [3:0] sevenSegIn;
         
-        // Instantiate led control and time-multiplexing module
+        // Instantiate the LED control and time-multiplexing module
         ledControl ledLogic(reset, sw1, sw2, onSeg, segSum, sevenSegIn);
 
         // Instantiate module to control 7-segment display
