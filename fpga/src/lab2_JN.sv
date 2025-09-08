@@ -11,6 +11,7 @@ module top(
         input logic [3:0] sw1, sw2,
         output logic [1:0] onSeg,
         output logic [4:0] segSum,
+        output logic [3:0] sevenSegIn;
         output logic [6:0] segDisp);
         
         // Instantiate led control and time-multiplexing module
