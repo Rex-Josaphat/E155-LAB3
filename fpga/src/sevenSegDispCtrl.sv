@@ -6,11 +6,11 @@
 // The interpreted hex value will be diplayed accurately using the segments of the diplay
 
 module sevenSegDispCtrl(
-        input logic [3:0] sevenSegIn,
-        output logic [6:0] segDisp);
+        input logic [3:0] swDIP,
+        output logic [6:0] SegDisp);
 
         always_comb begin
-            case (sevenSegIn)
+            case (swDIP)
                 4'h0 : segDisp = 7'b1000000;
                 4'h1 : segDisp = 7'b1111001;
                 4'h2 : segDisp = 7'b0100100;
