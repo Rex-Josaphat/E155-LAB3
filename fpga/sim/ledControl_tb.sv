@@ -4,7 +4,7 @@
 
 // This codebase represents the testbench to simulate and determine if the codebase prompts the hardware to react as desired/expected
 
-`timescale 1ns/1ps // Defines time unit as 1ns and time precision as 1ns
+`timescale 1ns/1ps // Defines time unit as 1ns and time precision as 1ps
 module ledControl_tb();
         logic clk, reset;
         logic [3:0] sw1, sw2;
@@ -25,14 +25,14 @@ module ledControl_tb();
         // Pulse the reset at start of tests 
         initial begin
             reset = 0;         
-            #0.2;
+            #0.2; // Delay for full clock cycle
             reset = 1;
         end
 
         /////// Check LED Sum //////
         // There are 256 (16^2) possible combinations of the two displays. Here I run as much as 12 cases only
         initial begin
-            sw1 = 4'b0000; sw2 = 4'b0101; segSumExpected = 5'b00101; #0.4; // Hold input for 2 clock cycles
+            sw1 = 4'b0000; sw2 = 4'b0101; segSumExpected = 5'b00101; #0.4; // Hold input for 2 clock cycles, the time it takes to switch enablers
             assert (segSum == segSumExpected) else $error("Expected sum = 5: %b. Got %b", segSum, segSumExpected);
 
             sw1 = 4'b0001; sw2 = 4'b1000; segSumExpected = 5'b01001; #0.4;
