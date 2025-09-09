@@ -6,7 +6,7 @@
 // segment displays gets to be on. It also has the 4-bit adder that calculates the sum of the two input 
 // digits and lights up the external LEDs. 
 
-module ledControl( 
+module ledControl #(parameter  int SWITCH_COUNT = 200_000)( 
         input logic clk, reset,
         input logic [3:0] sw1, sw2,
         output logic [1:0] onSeg, // Segment enablers, onSeg[0]: Left Display, onSeg[1]: Right Display, 
@@ -26,15 +26,12 @@ module ledControl(
             if(reset == 0) begin
                 counter <= 0; seg_en <= 0;
             end
-            
-            else if (counter == 200_000) begin // Switch every 2*10^5 cycles (~4 ms)
+            else if (counter == SWITCH_COUNT) begin // Switch every 2*10^5 cycles (~4 ms)
                 counter <= 0;
                 seg_en <= ~seg_en; 
             end
-
             else counter <= counter + 1;
         end
-
         //////////////// 7-segment display input and enabler logic //////////////////
         always_comb begin
             if (seg_en == 0) begin
