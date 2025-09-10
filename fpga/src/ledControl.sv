@@ -27,22 +27,21 @@ module ledControl #(parameter  int SWITCH_COUNT = 100_000)(
             if(reset == 0) begin
                 counter <= 0; seg_en <= 0;
             end
-                else if (counter == SWITCH_COUNT-1) begin // Switch every 1*10^5 cycles (~4 ms)
+                else if (counter == SWITCH_COUNT-1) begin // Switch every 1*10^5 cycles (~2 ms)
                 counter <= 0;
                 seg_en <= ~seg_en; 
             end
             else counter <= counter + 1;
         end
         //////////////// 7-segment display input and enabler logic //////////////////
-        next_sw = (seg_en == 0) ? sw1 : sw2; // Preload the next digit data
-        
         always_comb begin
-                if (counter < 10) begin // This is a blank stage to ensure both displays are off before we switch and send new data
-                onSeg = 2'b00; // Turn on left segment
+            next_sw = (seg_en == 0) ? sw1 : sw2; // Preload the next digit data
+            if (counter < 10) begin // This is a blank stage to ensure both displays are off before we switch and send new data
+                onSeg = 2'b00; // Turn off all segments
                 sevenSegIn = next_sw; // Send chosen data to Segment display 
 
             end else begin
-                onSeg = (seg_en == 0) ? 2b'10 : 2'b01; // Turn on a selected segment
+                onSeg = (seg_en == 0) ? 2'b10 : 2'b01; // Turn on a selected segment
                 sevenSegIn = next_sw; // Send chosen data to Segment display
             end
         end
