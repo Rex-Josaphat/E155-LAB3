@@ -16,6 +16,7 @@ module ledControl #(parameter  int SWITCH_COUNT = 100_000)(
         // Internal Logic
         logic seg_en; // Selector for which segment goes on
         logic [24:0] counter;
+        logic [3:0] next_sw; // This for pre-loading switch input and avoid bleeding displays
 
         // Sum of displayed digits
         assign segSum = sw1 + sw2;
@@ -26,21 +27,23 @@ module ledControl #(parameter  int SWITCH_COUNT = 100_000)(
             if(reset == 0) begin
                 counter <= 0; seg_en <= 0;
             end
-            else if (counter == SWITCH_COUNT) begin // Switch every 1*10^5 cycles (~2 ms)
+                else if (counter == SWITCH_COUNT-1) begin // Switch every 1*10^5 cycles (~4 ms)
                 counter <= 0;
                 seg_en <= ~seg_en; 
             end
             else counter <= counter + 1;
         end
         //////////////// 7-segment display input and enabler logic //////////////////
+        next_sw = (seg_en == 0) ? sw1 : sw2; // Preload the next digit data
+        
         always_comb begin
-            if (seg_en == 0) begin
-                onSeg = 2'b10; // Turn on left segment
-                sevenSegIn = sw1; // Choose on-board DIP switch inputs
+                if (counter < 10) begin // This is a blank stage to ensure both displays are off before we switch and send new data
+                onSeg = 2'b00; // Turn on left segment
+                sevenSegIn = next_sw; // Send chosen data to Segment display 
 
             end else begin
-                onSeg = 2'b01; // Turn on right segment
-                sevenSegIn = sw2; // Choose Breadboard DIP switch inputs
+                onSeg = (seg_en == 0) ? 2b'10 : 2'b01; // Turn on a selected segment
+                sevenSegIn = next_sw; // Send chosen data to Segment display
             end
         end
 
