@@ -30,44 +30,27 @@ module ledControl_tb();
         end
 
         /////// Check LED Sum //////
-        // There are 256 (16^2) possible combinations of the two displays. Here I run as much as 12 cases only
+        // There are 256 (16^2) possible combinations of the two displays.
         initial begin
-            sw1 = 4'b0000; sw2 = 4'b0101; segSumExpected = 5'b00101; #0.4; // Hold input for 2 clock cycles, the time it takes to switch enablers
-            assert (segSum == segSumExpected) else $error("Expected sum = 5: %b. Got %b", segSum, segSumExpected);
+            int errors = 0;
 
-            sw1 = 4'b0001; sw2 = 4'b1000; segSumExpected = 5'b01001; #0.4;
-            assert (segSum == segSumExpected) else $error("Expected sum = 9: %b. Got %b", segSum, segSumExpected);
-            
-            sw1 = 4'b1001; sw2 = 4'b0010; segSumExpected = 5'b01011; #0.4;
-            assert (segSum == segSumExpected) else $error("Expected sum = 11: %b. Got %b", segSum, segSumExpected);
-            
-            sw1 = 4'b1110; sw2 = 4'b0011; segSumExpected = 5'b10001; #0.4;
-            assert (segSum == segSumExpected) else $error("Expected sum = 17: %b. Got %b", segSum, segSumExpected);
-            
-            sw1 = 4'b0100; sw2 = 4'b1010; segSumExpected = 5'b01110; #0.4;
-            assert (segSum == segSumExpected) else $error("Expected sum = 14: %b. Got %b", segSum, segSumExpected);
-            
-            sw1 = 4'b0101; sw2 = 4'b0101; segSumExpected = 5'b01010; #0.4;
-            assert (segSum == segSumExpected) else $error("Expected sum = 10: %b. Got %b", segSum, segSumExpected);
-            
-            sw1 = 4'b1101; sw2 = 4'b0110; segSumExpected = 5'b10011; #0.4;
-            assert (segSum == segSumExpected) else $error("Expected sum = 19: %b. Got %b", segSum, segSumExpected);
-            
-            sw1 = 4'b0111; sw2 = 4'b1011; segSumExpected = 5'b10010; #0.4;
-            assert (segSum == segSumExpected) else $error("Expected sum = 18: %b. Got %b", segSum, segSumExpected);
-            
-            sw1 = 4'b1000; sw2 = 4'b0111; segSumExpected = 5'b01111; #0.4;
-            assert (segSum == segSumExpected) else $error("Expected sum = 15: %b. Got %b", segSum, segSumExpected);
-            
-            sw1 = 4'b1111; sw2 = 4'b1110; segSumExpected = 5'b11101; #0.4;
-            assert (segSum == segSumExpected) else $error("Expected sum = 29: %b. Got %b", segSum, segSumExpected);
-            
-            sw1 = 4'b1101; sw2 = 4'b1010; segSumExpected = 5'b10111; #0.4;
-            assert (segSum == segSumExpected) else $error("Expected sum = 23: %b. Got %b", segSum, segSumExpected);
-            
-            sw1 = 4'b1011; sw2 = 4'b1100; segSumExpected = 5'b10111; #0.4;
-            assert (segSum == segSumExpected) else $error("Expected sum = 23: %b. Got %b", segSum, segSumExpected);
+            // Initialize inputs
+            sw1 = 4'b0000; sw2 = 4'b0000;
 
-            // $finish;
+            @(posedge clk);
+            for (int a = 0; a < 16; a++) begin
+                for(int b = 0; b < 16; b++) begin
+                    sw1 = a[3:0];
+                    sw2 = b[3:0];
+
+                    segSumExpected = sw1 + sw2;
+                    #0.4;  // Hold input for 2 clock cycles, the time it takes to switch enablers
+
+                    if (segSum != segSumExpected) errors++;
+
+                end
+            end
+            
+            $display("Total errors after simulation: %0d", errors);
         end
 endmodule

@@ -33,10 +33,11 @@ module ledControl #(parameter  int SWITCH_COUNT = 100_000)(
             end
             else counter <= counter + 1;
         end
+        
         //////////////// 7-segment display input and enabler logic //////////////////
         always_comb begin
             next_sw = (seg_en == 0) ? sw1 : sw2; // Preload the next digit data
-            if (counter < 10) begin // This is a blank stage to ensure both displays are off before we switch and send new data
+            if (counter < 500) begin // This is a blank stage to ensure both displays are off before we switch and send new data (10us)
                 onSeg = 2'b00; // Turn off all segments
                 sevenSegIn = next_sw; // Send chosen data to Segment display 
 
