@@ -8,17 +8,21 @@
 
 module top( 
         input logic reset,
-        input logic [3:0] sw1, sw2,
+        input logic [3:0] col_async,
+        output logic [3:0] row,
         output logic [1:0] onSeg,
-        output logic [4:0] segSum,
         output logic [6:0] segDisp);
 
         // Internal Logic
-        logic [3:0] sevenSegIn;
-        logic int_osc;
+        logic int_osc; // oscillator clk
+        logic col; // Synchronized column input
+        logic [3:0] sevenSegIn; // seven-segment display input
         
         // Internal high-speed oscillator
         HSOSC hf_osc (.CLKHFPU(1'b1), .CLKHFEN(1'b1), .CLKHF(int_osc)); // 48 MHz
+
+        // Instantiate the input Synchronizing module
+        synchronizer sync(int_osc, reset, col_async, col);
 
         // Instantiate the LED control and time-multiplexing module
         ledControl ledLogic(int_osc, reset, sw1, sw2, onSeg, segSum, sevenSegIn);
