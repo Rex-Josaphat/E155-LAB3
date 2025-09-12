@@ -1,3 +1,3 @@
 # E155 Lab 2
 
-This repository includes the code to explore time-multiplexing and proper timing techniques using a dual 7-segment display. The goal is to use a single driver module but also switch so fast that it appears that all segments are on at the same time.
+This repository includes the code to explore how to use an FPGA to scan inputs from a keypad. This involves using Finite State Machine Logic to deal with phenomena like switch bouncing and synchronizing async. inputs. The lab also leverages time-multiplexing since the numbers have to be displayed on a dual 7-segment display.
