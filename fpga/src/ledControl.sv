@@ -1,6 +1,6 @@
 // Josaphat Ngoga
 // jngoga@g.hmc.edu
-// 9/5/2025
+// 9/11/2025
 
 // This module takes in switch inputs and clk and also handles the multiplexing determining which of the
 // segment displays gets to be on. It also has the 4-bit adder that calculates the sum of the two input 
