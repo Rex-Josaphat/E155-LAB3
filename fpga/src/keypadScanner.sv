@@ -43,43 +43,43 @@ module keypadScanner(
         // FSM State Logic
         always_comb begin
             case (state)
-                S0:  if(keyPress) nextstate <= S1; // row[0]
-                     else         nextstate <= S3;
+                S0:  if(keyPress) nextstate = S1; // row[0]
+                     else         nextstate = S3;
 
-                S1:  if(keyPress) nextstate <= S2; 
-                     else         nextstate <= S3; 
+                S1:  if(keyPress) nextstate = S2; 
+                     else         nextstate = S3; 
 
-                S2:  if(keyPress) nextstate <= S2;
-                     else         nextstate <= S3; 
+                S2:  if(keyPress) nextstate = S2;
+                     else         nextstate = S3; 
 
-                S3:  if(keyPress) nextstate <= S4; // row[1]
-                     else         nextstate <= S6; 
+                S3:  if(keyPress) nextstate = S4; // row[1]
+                     else         nextstate = S6; 
 
-                S4:  if(keyPress) nextstate <= S5;
-                     else         nextstate <= S6; 
+                S4:  if(keyPress) nextstate = S5;
+                     else         nextstate = S6; 
 
-                S5:  if(keyPress) nextstate <= S5;
-                     else         nextstate <= S6; 
+                S5:  if(keyPress) nextstate = S5;
+                     else         nextstate = S6; 
 
-                S6:  if(keyPress) nextstate <= S7; // row[2]
-                     else         nextstate <= S9; 
+                S6:  if(keyPress) nextstate = S7; // row[2]
+                     else         nextstate = S9; 
 
-                S7:  if(keyPress) nextstate <= S8;
-                     else         nextstate <= S9; 
+                S7:  if(keyPress) nextstate = S8;
+                     else         nextstate = S9; 
 
-                S8:  if(keyPress) nextstate <= S8;
-                     else         nextstate <= S9; 
+                S8:  if(keyPress) nextstate = S8;
+                     else         nextstate = S9; 
 
-                S9:  if(keyPress) nextstate <= S10; // row[3]
-                     else         nextstate <= S0; 
+                S9:  if(keyPress) nextstate = S10; // row[3]
+                     else         nextstate = S0; 
 
-                S10: if(keyPress) nextstate <= S11;
-                     else         nextstate <= S0; 
+                S10: if(keyPress) nextstate = S11;
+                     else         nextstate = S0; 
 
-                S11: if(keyPress) nextstate <= S11;
-                     else         nextstate <= S0; 
+                S11: if(keyPress) nextstate = S11;
+                     else         nextstate = S0; 
  
-                default:          nextstate <= S0;
+                default:          nextstate = S0;
             endcase
         end
 
