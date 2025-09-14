@@ -14,13 +14,8 @@ module synchronizer (
 
         // Synchronize
         always_ff @(posedge clk) begin
-            if (reset == 0) begin
-                col_meta <= 4'b0;
-                col <= 4'b0;
-            end else begin
-                col_meta <= col_async;
-                col <= col_meta;
-            end
+            col_meta <= col_async;
+            col <= col_meta;
         end
 
 endmodule
