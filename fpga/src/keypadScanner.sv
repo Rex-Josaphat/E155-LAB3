@@ -21,7 +21,7 @@ module keypadScanner(
         logic scan; // Enabler determining the rate of scanning rows
         logic [24:0] counter;
 
-        keyPress = col[0] ^ col[1] ^ col[2] ^ col[3]; // Check if any key on the keypad is pressed but ensure only one is pressed
+        assign keyPress = col[0] ^ col[1] ^ col[2] ^ col[3]; // Check if any key on the keypad is pressed but ensure only one is pressed
 
         always_ff @(posedge clk, negedge reset) begin
             if(!reset) begin

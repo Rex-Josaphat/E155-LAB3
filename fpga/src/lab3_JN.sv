@@ -15,8 +15,10 @@ module lab3_JN(
 
         // Internal Logic
         logic int_osc; // oscillator clk
-        logic col; // Synchronized column input
+        logic [3:0] col; // Synchronized column input
         logic [3:0] sevenSegIn; // seven-segment display input
+        logic [3:0] sw1, sw2; // switches
+        logic en;
         
         // Internal high-speed oscillator
         HSOSC hf_osc (.CLKHFPU(1'b1), .CLKHFEN(1'b1), .CLKHF(int_osc)); // 48 MHz
@@ -31,7 +33,7 @@ module lab3_JN(
         keypadDecoder keyDec(int_osc, reset, col, row, en, sw1, sw2);
 
         // Instantiate the LED control and time-multiplexing module
-        ledControl ledLogic(int_osc, reset, sw1, sw2, onSeg, segSum, sevenSegIn);
+        ledControl ledLogic(int_osc, reset, sw1, sw2, onSeg, sevenSegIn);
 
         // Instantiate module to control 7-segment display
         sevenSegDispCtrl segDispLogic(sevenSegIn, segDisp);

@@ -13,19 +13,19 @@ module keypadDecoder (
 
         // Internal Logic
         logic [3:0] key; // Hold the value of the detected key, necessary for switching
-        logic en_p ; // store current value of en
+        logic en_hold ; // store current value of en
         logic en_rise; // store rising edge valid/not. Prevents display shwitching every cycle
 
         // Detect rising edge of valid key press and only register it once
         always_ff @(posedge clk or negedge reset) begin
             if (!reset) begin
-                en_q <= 1'b0;
+                en_hold <= 1'b0;
             end else begin
-                en_q <= en;
+                en_hold <= en;
             end
         end
 
-        assign en_rise = en & ~en_q; // rising edge detect
+        assign en_rise = en & ~en_hold; // rising edge detect
 
         // Number Switching Logic
         always_ff @(posedge clk) begin
