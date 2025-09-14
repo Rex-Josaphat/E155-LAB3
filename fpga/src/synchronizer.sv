@@ -6,8 +6,8 @@
 
 module synchronizer (
         input logic clk, reset,
-        input logic [3:0] col,
-        output logic [3:0] col_sync);
+        input logic [3:0] col_async,
+        output logic [3:0] col);
 
         // internal logic
         logic [3:0] col_meta;
@@ -16,10 +16,10 @@ module synchronizer (
         always_ff @(posedge clk) begin
             if (reset == 0) begin
                 col_meta <= 4'b0;
-                col_sync <= 4'b0;
+                col <= 4'b0;
             end else begin
-                col_meta <= col;
-                col_sync <= col_meta;
+                col_meta <= col_async;
+                col <= col_meta;
             end
         end
 

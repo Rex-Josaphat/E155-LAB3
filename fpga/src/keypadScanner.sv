@@ -18,21 +18,20 @@ module keypadScanner(
 
         // Internal Logic
         logic keyPress;
-        logic scan; // Enabler determining the rate of scanning rows to mitigate bouncing
+        logic scan; // Enabler determining the rate of scanning rows
         logic [24:0] counter;
 
         keyPress = col[0] ^ col[1] ^ col[2] ^ col[3]; // Check if any key on the keypad is pressed but ensure only one is pressed
 
-        // Debouncing logic
         always_ff @(posedge clk, negedge reset) begin
             if(!reset) begin
                 scan <= 0; counter <= 0;
-            end 
-                else if (counter == 2_400_000 - 1) begin // Debounce for ~50ms
+            end else if (counter == 12_000 - 1) begin // Scan each row at 1kHz, eliminates debouncing
                     counter <= 0;
-                    scan <= ~scan;
-            end 
-                else counter <= counter +1;
+                    scan <= 1;
+            end else begin
+                    counter <= counter +1; scan <= 0;
+            end
         end
 
         // State register
@@ -78,7 +77,7 @@ module keypadScanner(
                      else         nextstate <= S0; 
 
                 S11: if(keyPress) nextstate <= S11;
-                     else         nextstate <= S1; 
+                     else         nextstate <= S0; 
  
                 default:          nextstate <= S0;
             endcase

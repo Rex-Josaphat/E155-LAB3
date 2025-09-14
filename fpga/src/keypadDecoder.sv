@@ -6,14 +6,43 @@
 // hexadecimal value pressed.
 
 module keypadDecoder (
+        input logic clk, reset,
+        input logic en,
         input logic [3:0] row, col,
-        output logic [3:0] key);
+        output logic [3:0] sw1, sw2);
 
+        // Internal Logic
+        logic [3:0] key; // Hold the value of the detected key, necessary for switching
+        logic en_p ; // store current value of en
+        logic en_rise; // store rising edge valid/not. Prevents display shwitching every cycle
+
+        // Detect rising edge of valid key press and only register it once
+        always_ff @(posedge clk or negedge reset) begin
+            if (!reset) begin
+                en_q <= 1'b0;
+            end else begin
+                en_q <= en;
+            end
+        end
+
+        assign en_rise = en & ~en_q; // rising edge detect
+
+        // Number Switching Logic
+        always_ff @(posedge clk) begin
+            if (!reset) begin
+                sw1 <= 4'b0000;
+                sw2 <= 4'b0000;
+            end else if (en_rise) begin
+                sw2 <= sw1; // Assign the display to the previous value
+                sw1 <= key;
+            end
+        end
+        
         // Keypad Version 1
         always_comb begin
             case ({row, col})
                 8'b0001_0001 : key = 4'hA;   
-                8'b0001_0010 : key = 4'h9;
+                8'b0001_0010 : key = 4'h0;
                 8'b0001_0100 : key = 4'hB;
                 8'b0001_1000 : key = 4'hF;
                 

@@ -10,16 +10,12 @@ module ledControl #(parameter  int SWITCH_COUNT = 100_000)(
         input logic clk, reset,
         input logic [3:0] sw1, sw2,
         output logic [1:0] onSeg, // Segment enablers, onSeg[0]: Left Display, onSeg[1]: Right Display, 
-        output logic [4:0] segSum,
         output logic [3:0] sevenSegIn);
 
         // Internal Logic
         logic seg_en; // Selector for which segment goes on
         logic [24:0] counter;
         logic [3:0] next_sw; // This for pre-loading switch input and avoid bleeding displays
-
-        // Sum of displayed digits
-        assign segSum = sw1 + sw2;
 
         ////////////// Time-multiplexing logic ///////////////
         // Counter to allow switching
@@ -42,9 +38,8 @@ module ledControl #(parameter  int SWITCH_COUNT = 100_000)(
                 sevenSegIn = next_sw; // Send chosen data to Segment display 
 
             end else begin
-                onSeg = (seg_en == 0) ? 2'b10 : 2'b01; // Turn on a selected segment
+                onSeg = (seg_en == 0) ? 2'b01 : 2'b10; // Turn on a selected segment
                 sevenSegIn = next_sw; // Send chosen data to Segment display
             end
         end
-
 endmodule
