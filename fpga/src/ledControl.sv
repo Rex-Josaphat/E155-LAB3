@@ -14,32 +14,24 @@ module ledControl #(parameter  int SWITCH_COUNT = 100_000)(
 
         // Internal Logic
         logic seg_en; // Selector for which segment goes on
-        logic [24:0] counter;
         logic [3:0] next_sw; // This for pre-loading switch input and avoid bleeding displays
 
         ////////////// Time-multiplexing logic ///////////////
         // Counter to allow switching
         always_ff @(posedge clk) begin
             if(reset == 0) begin
-                counter <= 0; seg_en <= 0;
-            end
-                else if (counter == SWITCH_COUNT-1) begin // Switch every 1*10^5 cycles (~2 ms)
-                counter <= 0;
-                seg_en <= ~seg_en; 
+                seg_en <= 0;
+                next_sw <= 4'h0;
+            end else begin // Switch every 1*10^5 cycles (~2 ms)
+                seg_en <= ~seg_en;
+                next_sw = (seg_en == 0) ? sw2 : sw1; // Preload the next digit data             
             end
             else counter <= counter + 1;
         end
         
         //////////////// 7-segment display input and enabler logic //////////////////
         always_comb begin
-            next_sw = (seg_en == 0) ? sw1 : sw2; // Preload the next digit data
-            if (counter < 500) begin // This is a blank stage to ensure both displays are off before we switch and send new data (10us)
-                onSeg = 2'b00; // Turn off all segments
-                sevenSegIn = next_sw; // Send chosen data to Segment display 
-
-            end else begin
-                onSeg = (seg_en == 0) ? 2'b01 : 2'b10; // Turn on a selected segment
                 sevenSegIn = next_sw; // Send chosen data to Segment display
-            end
+                onSeg = (seg_en == 0) ? 2'b01 : 2'b10; // Turn on a selected segment
         end
 endmodule

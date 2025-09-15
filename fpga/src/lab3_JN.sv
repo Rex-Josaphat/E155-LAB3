@@ -14,15 +14,25 @@ module lab3_JN(
         output logic [6:0] segDisp);
 
         // Internal Logic
-        logic clk; // oscillator clk
+        logic intOsc, clk; // oscillator clk
+        logic [24:0] counter;
         logic [3:0] col; // Synchronized column input
         logic [3:0] row;
         logic [3:0] sevenSegIn; // seven-segment display input
         logic [3:0] sw1, sw2; // switches
         logic en;
         
-        // Internal high-speed oscillator
-        HSOSC hf_osc (.CLKHFPU(1'b1), .CLKHFEN(1'b1), .CLKHF(clk)); // 48 MHz
+        // Internal high-speed oscillator to generate slow clock
+        HSOSC hf_osc (.CLKHFPU(1'b1), .CLKHFEN(1'b1), .CLKHF(intOsc)); // 48 MHz
+        always_ff @(posedge intOsc) begin
+            if (reset == 0) begin
+                clk <= 0;
+        	    counter <= 0;
+        	end else if (counter == 100_000 - 1) begin
+        			clk <= ~clk;
+        			counter <= 0;
+            end else counter <= counter + 1;
+        end
 
         // Instantiate the input Synchronizing module
         synchronizer sync(clk, reset, col_async, col);

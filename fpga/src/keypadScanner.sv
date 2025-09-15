@@ -18,27 +18,27 @@ module keypadScanner(
 
         // Internal Logic
         logic keyPress;
-        logic scan; // Enabler determining the rate of scanning rows
-        logic [24:0] counter;
+     //    logic scan; // Enabler determining the rate of scanning rows
+     //    logic [24:0] counter;
 
         assign keyPress = col[0] ^ col[1] ^ col[2] ^ col[3]; // Check if any key on the keypad is pressed but ensure only one is pressed
 
-        // Slow down scanning from the given 48MHz to 4MHz overall
-        always_ff @(posedge clk, negedge reset) begin
-            if(!reset) begin
-                scan <= 0; counter <= 0;
-            end else if (counter == 48_000 - 1) begin // Scan at 1kHz per row
-                    counter <= 0;
-                    scan <= 1;
-            end else begin
-                    counter <= counter +1; scan <= 0;
-            end
-        end
+     //    // Slow down scanning from the given 48MHz to 4MHz overall
+     //    always_ff @(posedge clk, negedge reset) begin
+     //        if(!reset) begin
+     //            scan <= 0; counter <= 0;
+     //        end else if (counter == 48_000 - 1) begin // Scan at 1kHz per row
+     //                counter <= 0;
+     //                scan <= 1;
+     //        end else begin
+     //                counter <= counter +1; scan <= 0;
+     //        end
+     //    end
 
         // State register
         always_ff @(posedge clk, negedge reset) begin
             if(!reset) state <= S0;
-            else if (scan) state <= nextstate; // Only switch states at the defined rate
+            else state <= nextstate; // Only switch states at the defined rate
         end
         
         // FSM State Logic
