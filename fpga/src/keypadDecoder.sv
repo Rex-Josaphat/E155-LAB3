@@ -7,7 +7,7 @@
 
 module keypadDecoder (
         input logic clk, reset,
-        input logic en,
+        input logic en, 
         input logic [3:0] row, col,
         output logic [3:0] sw1, sw2);
 

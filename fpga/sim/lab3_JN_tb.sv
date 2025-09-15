@@ -15,23 +15,23 @@ module lab3_JN(
 	    end
 
         // Pulse the reset at start of tests 
-        initial begin
-            reset = 1;         
-            #20; 
-            reset = 0;
-        end
+    	initial begin
+    	    reset = 1; #20; 
+    	    reset = 0; #20;
+    	    reset = 1; #20; 
+    	end
        
 	    initial begin
-	    	col = 4'b0000; #50;
-	    	col = 4'b0001; #50;
+	        col_async = 4'b0000; #50;
+	        col_async = 4'b0001; #50;
 
-	    	col = 4'b0000; #50;
-	    	col = 4'b0010; #50;
+	        col_async = 4'b0000; #50;
+	        col_async = 4'b0010; #50;
 
-	    	col = 4'b0000; #50;
-	    	col = 4'b0100; #50;
+	        col_async = 4'b0000; #50;
+	        col_async = 4'b0100; #50;
 
-	    	col = 4'b0000; #50;
-	    	col = 4'b1000; #50;
+	        col_async = 4'b0000; #50;
+	        col_async = 4'b1000; #50;
 	    end
 endmodule

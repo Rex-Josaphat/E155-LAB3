@@ -24,9 +24,9 @@ module keypadScanner_tb();
         
         // Pulse the reset at start of tests 
         initial begin
-            reset = 1;         
-            #20; 
-            reset = 0;
+            reset = 1; #20; 
+            reset = 0; #20;
+            reset = 1; #20; 
         end
 
 	    initial begin

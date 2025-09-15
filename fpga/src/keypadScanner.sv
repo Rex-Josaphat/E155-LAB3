@@ -89,6 +89,6 @@ module keypadScanner(
         assign row[2] = (state == S6) | (state == S7) | (state == S8);
         assign row[3] = (state == S9) | (state == S10) | (state == S11);
 
-        assign en  = (state == S1) | (state == S4) | (state == S7) | (state == S10); // Enabler ON
+        assign en  = scan && ((state == S2) | (state == S5) | (state == S8) | (state == S11)); // Enabler ON
 
 endmodule
