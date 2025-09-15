@@ -10,7 +10,7 @@ module keypadScanner(
         input logic clk, 
         input logic reset, // Active LOW asynchronous reset
         input logic [3:0] col,
-        output logic [3:0] row, // Register rows
+        output logic [3:0] rowScan, row, // Register rows
         output logic en); // Logic enabler to acknowledge a keypress is comfirmed
 
         typedef enum logic [3:0] { S0, S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11} statetype;
@@ -83,12 +83,19 @@ module keypadScanner(
             endcase
         end
 
+        // power a specific row depending on which state is active
+	    assign rowScan[0] = ((state == S0) | (state == S1) | (state == S2) | (state == S4) | (state == S5) | (state == S7) | (state == S8) | (state == S10) | (state == S11));
+	    assign rowScan[1] = ((state == S3) | (state == S1) | (state == S2) | (state == S4) | (state == S5) | (state == S7) | (state == S8) | (state == S10) | (state == S11));
+	    assign rowScan[2] = ((state == S6) | (state == S1) | (state == S2) | (state == S4) | (state == S5) | (state == S7) | (state == S8) | (state == S10) | (state == S11));
+	    assign rowScan[3] = ((state == S9) | (state == S1) | (state == S2) | (state == S4) | (state == S5) | (state == S7) | (state == S8) | (state == S10) | (state == S11));
+    
         // Row Logic
-        assign row[0] = (state == S0) | (state == S1) | (state == S2);
-        assign row[1] = (state == S3) | (state == S4) | (state == S5);
-        assign row[2] = (state == S6) | (state == S7) | (state == S8);
-        assign row[3] = (state == S9) | (state == S10) | (state == S11);
+        assign row[0] = ((state == S0) | (state == S1) | (state == S2));
+        assign row[1] = ((state == S3) | (state == S4) | (state == S5));
+        assign row[2] = ((state == S6) | (state == S7) | (state == S8));
+        assign row[3] = ((state == S9) | (state == S10) | (state == S11));
 
-        assign en  = scan && ((state == S2) | (state == S5) | (state == S8) | (state == S11)); // Enabler ON
+        // assign en  = scan && ((state == S2) | (state == S5) | (state == S8) | (state == S11)); // Enabler ON
+        assign en  = ((state == S2) | (state == S5) | (state == S8) | (state == S11)); // Enabler ON
 
 endmodule

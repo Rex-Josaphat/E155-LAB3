@@ -9,13 +9,14 @@
 module lab3_JN( 
         input logic reset,
         input logic [3:0] col_async,
-        output logic [3:0] row,
+        output logic [3:0] rowScan,
         output logic [1:0] onSeg,
         output logic [6:0] segDisp);
 
         // Internal Logic
         logic int_osc; // oscillator clk
         logic [3:0] col; // Synchronized column input
+        logic [3:0] row;
         logic [3:0] sevenSegIn; // seven-segment display input
         logic [3:0] sw1, sw2; // switches
         logic en;
@@ -27,10 +28,10 @@ module lab3_JN(
         synchronizer sync(int_osc, reset, col_async, col);
 
         // Instantiate the keypad scanner module
-        keypadScanner keyScan(int_osc, reset, col, row, en);
+        keypadScanner keyScan(int_osc, reset, col, rowScan, row, en);
 
         // Instnatiate keypress decoding module
-        keypadDecoder keyDec(int_osc, reset, col, row, en, sw1, sw2);
+        keypadDecoder keyDec(int_osc, reset, en, row, col, sw1, sw2);
 
         // Instantiate the LED control and time-multiplexing module
         ledControl ledLogic(int_osc, reset, sw1, sw2, onSeg, sevenSegIn);
