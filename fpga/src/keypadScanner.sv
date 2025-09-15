@@ -13,7 +13,7 @@ module keypadScanner(
         output logic [3:0] rowScan, row, // Register rows
         output logic en); // Logic enabler to acknowledge a keypress is comfirmed
 
-        typedef enum logic [3:0] { S0, S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11} statetype;
+        typedef enum logic [3:0] { S0, S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12, S13, S14, S15} statetype;
         statetype state, nextstate;
 
         // Internal Logic
@@ -44,7 +44,7 @@ module keypadScanner(
         // FSM State Logic
         always_comb begin
             case (state)
-                S0:  if(keyPress) nextstate = S1; // row[0]
+                S0:  if(keyPress) nextstate = S12; // row[0]
                      else         nextstate = S3;
 
                 S1:  if(keyPress) nextstate = S2; 
@@ -53,7 +53,7 @@ module keypadScanner(
                 S2:  if(keyPress) nextstate = S2;
                      else         nextstate = S3; 
 
-                S3:  if(keyPress) nextstate = S4; // row[1]
+                S3:  if(keyPress) nextstate = S13; // row[1]
                      else         nextstate = S6; 
 
                 S4:  if(keyPress) nextstate = S5;
@@ -62,7 +62,7 @@ module keypadScanner(
                 S5:  if(keyPress) nextstate = S5;
                      else         nextstate = S6; 
 
-                S6:  if(keyPress) nextstate = S7; // row[2]
+                S6:  if(keyPress) nextstate = S14; // row[2]
                      else         nextstate = S9; 
 
                 S7:  if(keyPress) nextstate = S8;
@@ -71,14 +71,22 @@ module keypadScanner(
                 S8:  if(keyPress) nextstate = S8;
                      else         nextstate = S9; 
 
-                S9:  if(keyPress) nextstate = S10; // row[3]
+                S9:  if(keyPress) nextstate = S15; // row[3]
                      else         nextstate = S0; 
 
                 S10: if(keyPress) nextstate = S11;
                      else         nextstate = S0; 
 
                 S11: if(keyPress) nextstate = S11;
-                     else         nextstate = S0; 
+                     else         nextstate = S0;
+                
+				S12: 			  nextstate = S1;
+                
+				S13: 			  nextstate = S4;
+                
+				S14: 			  nextstate = S7;
+                
+				S15: 			  nextstate = S10;
  
                 default:          nextstate = S0;
             endcase
@@ -96,7 +104,6 @@ module keypadScanner(
         assign row[2] = ((state == S6) | (state == S7) | (state == S8));
         assign row[3] = ((state == S9) | (state == S10) | (state == S11));
 
-        // assign en  = scan && ((state == S2) | (state == S5) | (state == S8) | (state == S11)); // Enabler ON
         assign en  = ((state == S1) | (state == S4) | (state == S7) | (state == S10)); // Enabler ON
 
 endmodule

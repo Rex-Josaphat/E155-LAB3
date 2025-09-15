@@ -22,5 +22,4 @@ module synchronizer (
                 col <= col_meta;
             end
         end
-
 endmodule

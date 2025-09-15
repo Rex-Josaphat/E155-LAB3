@@ -24,7 +24,7 @@ module ledControl #(parameter  int SWITCH_COUNT = 100_000)(
                 next_sw <= 4'h0;
             end else begin // Switch every 1*10^5 cycles (~2 ms)
                 seg_en <= ~seg_en;
-                next_sw = (seg_en == 0) ? sw2 : sw1; // Preload the next digit data             
+                next_sw <= (seg_en == 0) ? sw2 : sw1; // Preload the next digit data             
             end
         end
         
