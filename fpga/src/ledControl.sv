@@ -26,12 +26,11 @@ module ledControl #(parameter  int SWITCH_COUNT = 100_000)(
                 seg_en <= ~seg_en;
                 next_sw = (seg_en == 0) ? sw2 : sw1; // Preload the next digit data             
             end
-            else counter <= counter + 1;
         end
         
         //////////////// 7-segment display input and enabler logic //////////////////
         always_comb begin
-                sevenSegIn = next_sw; // Send chosen data to Segment display
-                onSeg = (seg_en == 0) ? 2'b01 : 2'b10; // Turn on a selected segment
+            sevenSegIn = next_sw; // Send chosen data to Segment display
+            onSeg = (seg_en == 0) ? 2'b01 : 2'b10; // Turn on a selected segment
         end
 endmodule
