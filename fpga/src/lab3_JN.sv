@@ -14,7 +14,7 @@ module lab3_JN(
         output logic [6:0] segDisp);
 
         // Internal Logic
-        logic int_osc; // oscillator clk
+        logic clk; // oscillator clk
         logic [3:0] col; // Synchronized column input
         logic [3:0] row;
         logic [3:0] sevenSegIn; // seven-segment display input
@@ -22,19 +22,19 @@ module lab3_JN(
         logic en;
         
         // Internal high-speed oscillator
-        HSOSC hf_osc (.CLKHFPU(1'b1), .CLKHFEN(1'b1), .CLKHF(int_osc)); // 48 MHz
+        HSOSC hf_osc (.CLKHFPU(1'b1), .CLKHFEN(1'b1), .CLKHF(clk)); // 48 MHz
 
         // Instantiate the input Synchronizing module
-        synchronizer sync(int_osc, reset, col_async, col);
+        synchronizer sync(clk, reset, col_async, col);
 
         // Instantiate the keypad scanner module
-        keypadScanner keyScan(int_osc, reset, col, rowScan, row, en);
+        keypadScanner keyScan(clk, reset, col, rowScan, row, en);
 
         // Instnatiate keypress decoding module
-        keypadDecoder keyDec(int_osc, reset, en, row, col, sw1, sw2);
+        keypadDecoder keyDec(clk, reset, en, row, col, sw1, sw2);
 
         // Instantiate the LED control and time-multiplexing module
-        ledControl ledLogic(int_osc, reset, sw1, sw2, onSeg, sevenSegIn);
+        ledControl ledLogic(clk, reset, sw1, sw2, onSeg, sevenSegIn);
 
         // Instantiate module to control 7-segment display
         sevenSegDispCtrl segDispLogic(sevenSegIn, segDisp);

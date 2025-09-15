@@ -23,10 +23,11 @@ module keypadScanner(
 
         assign keyPress = col[0] ^ col[1] ^ col[2] ^ col[3]; // Check if any key on the keypad is pressed but ensure only one is pressed
 
+        // Slow down scanning from the given 48MHz to 4MHz overall
         always_ff @(posedge clk, negedge reset) begin
             if(!reset) begin
                 scan <= 0; counter <= 0;
-            end else if (counter == 12_000 - 1) begin // Scan each row at 1kHz, eliminates debouncing
+            end else if (counter == 48_000 - 1) begin // Scan at 1kHz per row
                     counter <= 0;
                     scan <= 1;
             end else begin
@@ -96,6 +97,6 @@ module keypadScanner(
         assign row[3] = ((state == S9) | (state == S10) | (state == S11));
 
         // assign en  = scan && ((state == S2) | (state == S5) | (state == S8) | (state == S11)); // Enabler ON
-        assign en  = ((state == S2) | (state == S5) | (state == S8) | (state == S11)); // Enabler ON
+        assign en  = ((state == S1) | (state == S4) | (state == S7) | (state == S10)); // Enabler ON
 
 endmodule
