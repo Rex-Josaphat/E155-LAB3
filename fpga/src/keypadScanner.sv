@@ -13,17 +13,17 @@ module keypadScanner(
         output logic [3:0] rowScan, row, // Register rows
         output logic en); // Logic enabler to acknowledge a keypress is comfirmed
 
-        typedef enum logic [3:0] { S0, S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12, S13, S14, S15} statetype;
+        typedef enum logic [3:0] { S0, S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11} statetype;
         statetype state, nextstate;
 
         // Internal Logic
         logic keyPress;
-     //    logic scan; // Enabler determining the rate of scanning rows
+        logic scan_delay; // To induce one cycle delay countering the synchronizer
      //    logic [24:0] counter;
 
         assign keyPress = col[0] ^ col[1] ^ col[2] ^ col[3]; // Check if any key on the keypad is pressed but ensure only one is pressed
 
-     //    // Slow down scanning from the given 48MHz to 4MHz overall
+     //    // Slow down scanning from the given 48MHz to 4kHz overall
      //    always_ff @(posedge clk, negedge reset) begin
      //        if(!reset) begin
      //            scan <= 0; counter <= 0;
@@ -35,6 +35,15 @@ module keypadScanner(
      //        end
      //    end
 
+		// Induce single-cycle delay
+        always_ff @(posedge clk, negedge reset) begin
+            if(!reset) begin
+                scan_delay <= 1'b0;
+            end else begin
+                scan_delay <= keyPress;
+            end
+        end
+
         // State register
         always_ff @(posedge clk, negedge reset) begin
             if(!reset) state <= S0;
@@ -44,49 +53,41 @@ module keypadScanner(
         // FSM State Logic
         always_comb begin
             case (state)
-                S0:  if(keyPress) nextstate = S12; // row[0]
+                S0:  if(scan_delay) nextstate = S1; // row[0]
                      else         nextstate = S3;
 
-                S1:  if(keyPress) nextstate = S2; 
+                S1:  if(scan_delay) nextstate = S2; 
                      else         nextstate = S3; 
 
-                S2:  if(keyPress) nextstate = S2;
+                S2:  if(scan_delay) nextstate = S2;
                      else         nextstate = S3; 
 
-                S3:  if(keyPress) nextstate = S13; // row[1]
+                S3:  if(scan_delay) nextstate = S4; // row[1]
                      else         nextstate = S6; 
 
-                S4:  if(keyPress) nextstate = S5;
+                S4:  if(scan_delay) nextstate = S5;
                      else         nextstate = S6; 
 
-                S5:  if(keyPress) nextstate = S5;
+                S5:  if(scan_delay) nextstate = S5;
                      else         nextstate = S6; 
 
-                S6:  if(keyPress) nextstate = S14; // row[2]
+                S6:  if(scan_delay) nextstate = S7; // row[2]
                      else         nextstate = S9; 
 
-                S7:  if(keyPress) nextstate = S8;
+                S7:  if(scan_delay) nextstate = S8;
                      else         nextstate = S9; 
 
-                S8:  if(keyPress) nextstate = S8;
+                S8:  if(scan_delay) nextstate = S8;
                      else         nextstate = S9; 
 
-                S9:  if(keyPress) nextstate = S15; // row[3]
+                S9:  if(scan_delay) nextstate = S10; // row[3]
                      else         nextstate = S0; 
 
-                S10: if(keyPress) nextstate = S11;
+                S10: if(scan_delay) nextstate = S11;
                      else         nextstate = S0; 
 
-                S11: if(keyPress) nextstate = S11;
-                     else         nextstate = S0;
-                
-				S12: 			  nextstate = S1;
-                
-				S13: 			  nextstate = S4;
-                
-				S14: 			  nextstate = S7;
-                
-				S15: 			  nextstate = S10;
+                S11: if(scan_delay) nextstate = S11;
+                     else         nextstate = S0; 
  
                 default:          nextstate = S0;
             endcase
