@@ -21,7 +21,7 @@ module keypadScanner(
         logic scan_delay; // To induce one cycle delay countering the synchronizer
      //    logic [24:0] counter;
 
-        assign keyPress = col[0] ^ col[1] ^ col[2] ^ col[3]; // Check if any key on the keypad is pressed but ensure only one is pressed
+        assign keyPress = (col != 0) && ((col & (col -1)) = 0); // Check if any key on the keypad is pressed but ensure only one is pressed
 
      //    // Slow down scanning from the given 48MHz to 4kHz overall
      //    always_ff @(posedge clk, negedge reset) begin
