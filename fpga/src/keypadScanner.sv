@@ -41,7 +41,7 @@ module keypadScanner(
 			end
 		end
 
-        assign keyPress = (col != 4'b0000) && ((col & (col - 1)) == 4'b0000); // Check if any key on the keypad is pressed but ensure only one is pressed        assign keyPress = (col != 0) && ((col & (col -1)) == 0); // Check if any key on the keypad is pressed but ensure only one is pressed
+        assign keyPress = (col != 4'b0000) && ((col & (col - 1)) == 4'b0000); // Check if any key on the keypad is pressed but ensure only one is pressed        
 
         // State register
         always_ff @(posedge clk or negedge reset) begin
