@@ -45,7 +45,7 @@ module keypadScanner_tb();
 			col_async = 4'b0000; #50;
 	    	col_async = 4'b1100; #50; // Bad input: Do not register
 
-			col_async = 4'b0000; #50;
+			col_async = 4'b0100; #50;
 			col_async = 4'b1010; #50; // Bad input: Do not register
 
 			col_async = 4'b0000; #50;

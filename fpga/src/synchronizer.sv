@@ -13,10 +13,10 @@ module synchronizer (
         logic [3:0] col_meta;
 
         // Synchronize
-        always_ff @(posedge clk or negedge reset) begin
+        always_ff @(posedge clk) begin
             if (!reset) begin
-                col_meta <= 4'hF;
-                col <= 4'hF;
+                col_meta <= 4'b0000;
+                col <= 4'b0000;
             end else begin
                 col_meta <= col_async;
                 col <= col_meta;
