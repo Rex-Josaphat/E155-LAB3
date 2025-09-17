@@ -89,7 +89,7 @@ module keypadScanner(
                 // Row 2
 				S6:  if(keyPress) nextstate = S7;
                      else         nextstate = S9; 
-                S7:  if(!keyPress)nextstate = S8;
+                S7:  if(!keyPress)nextstate = S9;
                      else         nextstate = (DBcounter >= DEBOUNCE ? S8 : S7); 
                 S8:  if(keyPress) nextstate = S8;
                      else         nextstate = S9; 
@@ -120,6 +120,6 @@ module keypadScanner(
                 	( ((state == S1)  && (DBcounter == DEBOUNCE - 1)) ||
                 	  ((state == S4)  && (DBcounter == DEBOUNCE - 1)) ||
                 	  ((state == S7)  && (DBcounter == DEBOUNCE - 1)) ||
-                	  ((state == S10) && (DBcounter == DEBOUNCE - 1)) );; 
+                	  ((state == S10) && (DBcounter == DEBOUNCE - 1)) ); 
 
 endmodule
