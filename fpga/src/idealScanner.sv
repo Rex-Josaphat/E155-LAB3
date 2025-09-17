@@ -1,154 +1,150 @@
-// Christian Wu
-// chrwu@g.hmc.edu
-// 09/15/25
+// Josaphat Ngoga
+// jngoga@g.hmc.edu
+// 9/11/2025
 
-// This module implements a finite state machine (FSM) to scan a 4x4 keypad.
-// It drives the rows and reads the columns to detect key presses, with
-// debouncing and single key press detection. The FSM operates at 1kHz,
-// with a debounce period of 50ms. The design ensures that only one key
-// press is registered at a time, and it waits for the key to be released
-// before allowing another key press to be detected.
+// This module receives the column input and scans rows to determine exactly
+// which row was acivated. These values are then sent to the decoding module 
+// to figure out which key was pressed
+        
+module keypadScanner(
+        input logic clk, // 48MHz
+        input logic reset, // Active LOW asynchronous reset
+        input logic [3:0] col, // Synchronized column input
+        output logic [3:0] rowScan, // Power the rows
+        output logic [3:0] row, // Register row for comfirmed press
+        output logic en); // Logic enabler for comfirmed keypress
 
-module keypadFSM (
-    input  logic clk,
-    input  logic reset,
-    input  logic [3:0] col,
-    output logic [3:0] row,
-    output logic [7:0] rc,
-    output logic en);
+        typedef enum logic [3:0] { S0, S1, S2, // row 0
+                                   S3, S4, S5, // row 1
+                                   S6, S7, S8, // row 2
+                                   S9, S10, S11 // row 3                          
+        } statetype;
 
-    typedef enum logic [3:0] {
-        S0,       // Row0 scan
-        S1,       // Row1 scan
-        S2,       // Row2 scan
-        S3,       // Row3 scan
-        S4,       // Row0 debounce
-        S5,       // Row0 hold
-        S6,       // Row1 debounce
-        S7,       // Row1 hold
-        S8,       // Row2 debounce
-        S9,       // Row2 hold
-        S10,      // Row3 debounce
-        S11       // Row3 hold
-    } state_t;
+        statetype state, nextstate;
 
-    state_t state, nextState;
-    logic [3:0] activeCol;
-    logic buttonPressed, oneButtonPressed;
-    logic [3:0] rowPressed;
-    logic [3:0] originalButton; 
-    logic originalStillPressed; 
-    logic [7:0] counter;
-    logic [18:0] fsm_counter;
-    logic fsm_tick;
+        // Internal Logic
+        logic keyPress; 
+        logic [24:0] counter, DBcounter;
+		logic clk_en; // Modified FSM scan clock
 
-    parameter FSM_TICK_COUNT = 19'd48_000;    
-    parameter DEBOUNCE_COUNT = 8'd50;        
+        // Set slow scan rate for the FSM
+        always_ff @(posedge clk) begin
+			if(!reset) begin
+				counter <= 0;
+				clk_en <= 1'b0;
+			end else if (counter == 100_000 - 1) begin
+				counter <= 0;
+				clk_en <= 1'b1;
+			end else begin
+				counter <= counter + 1;
+				clk_en <= 1'b0;
+			end
+		end
 
-    // 1kHz tick generator for FSM state transitions
-    always_ff @(posedge clk) begin
-        if (reset) begin
-            fsm_counter <= 0;
-            fsm_tick <= 0;
-        end else begin
-            if (fsm_counter >= FSM_TICK_COUNT - 1) begin
-                fsm_counter <= 0;
-                fsm_tick <= 1;
-            end else begin
-                fsm_counter <= fsm_counter + 1;
-                fsm_tick <= 0;
-            end
+		// ---- NEW: key lock + checks ----
+		logic [3:0] originalButton;           // locked-in column
+		logic       originalStillPressed;
+
+		wire oneHot = (col != 4'b0000) && ((col & (col - 1)) == 4'b0000);
+		assign keyPress = oneHot;             // (remove your duplicate assign)
+
+		// If you already derive an activeCol per row, use that instead of `col`.
+		assign originalStillPressed = (originalButton != 4'b0000) &&
+		                              ((col & originalButton) == originalButton);
+
+        // State register
+        always_ff @(posedge clk or negedge reset) begin
+            if(!reset) begin
+				state <= S0;
+				originalButton <= 4'b0000;
+			end else if (clk_en) begin
+				state <= nextstate; // Only switch states at the defined rate
+
+				// When moving Scan->Debounce, lock which column was pressed
+				if ( (state     inside {S0,S3,S6,S9})   &&   // scan states (one per row)
+				     (nextstate inside {S1,S4,S7,S10})  &&   // debounce states
+				     oneHot ) begin
+				    originalButton <= col;   // or activeCol if you compute it
+				end
+
+				// When returning to any Scan state, clear the lock
+				if (nextstate inside {S0,S3,S6,S9}) begin
+				    originalButton <= 4'b0000;
+				end
+        	end
+		end
+        
+		// Keypad Debouncing Logic (target 50ms debounce)
+		localparam int unsigned DEBOUNCE = 24;
+
+        always_ff @(posedge clk) begin
+			if(!reset) DBcounter <= 0;
+			else if (clk_en) begin
+				if (state inside {S1, S4, S7, S10})begin
+					if (originalStillPressed && DBcounter < DEBOUNCE) begin
+						DBcounter <= DBcounter + 1;
+					end else if (!originalStillPressed) begin
+						DBcounter <= 0;
+					end
+				end else begin
+					DBcounter <= 0;
+				end
+			end
+		end
+
+        // FSM State Transition Logic
+        always_comb begin
+            unique case (state)
+				// Row 0
+                S0:  if(keyPress) nextstate = S1;
+                     else         nextstate = S3;
+                S1:  if(!keyPress)nextstate = S3; 
+                     else         nextstate = (DBcounter >= DEBOUNCE ? S2 : S1); 
+                S2:  if(originalStillPressed) nextstate = S2;
+                     else         nextstate = S3; 
+
+				// Row 1
+                S3:  if(keyPress) nextstate = S4; 
+                     else         nextstate = S6; 
+                S4:  if(!keyPress)nextstate = S6;
+                     else         nextstate = (DBcounter >= DEBOUNCE ? S5 : S4);  
+                S5:  if(originalStillPressed) nextstate = S5;
+                     else         nextstate = S6; 
+
+                // Row 2
+				S6:  if(keyPress) nextstate = S7;
+                     else         nextstate = S9; 
+                S7:  if(!keyPress)nextstate = S9;
+                     else         nextstate = (DBcounter >= DEBOUNCE ? S8 : S7); 
+                S8:  if(originalStillPressed) nextstate = S8;
+                     else         nextstate = S9; 
+
+				// Row 3
+                S9:  if(keyPress) nextstate = S10;
+                     else         nextstate = S0; 
+                S10: if(!keyPress)nextstate = S0;
+                     else         nextstate = (DBcounter >= DEBOUNCE ? S11 : S10); 
+                S11: if(originalStillPressed) nextstate = S11;
+                     else         nextstate = S0; 
+ 
+                default:          nextstate = S0;
+            endcase
         end
-    end
 
-    always_ff @(posedge clk) begin
-        if (reset) begin
-            state <= S0;
-            counter <= 0;
-            originalButton <= 4'b0000;
-        end else if (fsm_tick) begin
-            state <= nextState;
-            
-            // Store original button when entering debounce states
-            if ((state inside {S0,S1,S2,S3}) && (nextState inside {S4,S6,S8,S10}) && oneButtonPressed) begin
-                originalButton <= activeCol;
-            end
-            
-            // Clear original button when returning to scanning
-            if (nextState inside {S0,S1,S2,S3}) begin
-                originalButton <= 4'b0000;
-            end
-            
-            // Debounce counter (only in debounce states)
-            if (state inside {S4,S6,S8,S10}) begin
-                if (buttonPressed && counter < DEBOUNCE_COUNT)
-                    counter <= counter + 1;
-                else if (!buttonPressed)
-                    counter <= 0;
-            end else begin
-                counter <= 0;
-            end
-        end
-    end
+        // Row Logic
+    	assign row[0] = (state inside {S0,  S1,  S2 });
+    	assign row[1] = (state inside {S3,  S4,  S5 });
+    	assign row[2] = (state inside {S6,  S7,  S8 });
+    	assign row[3] = (state inside {S9,  S10, S11});
 
-    always_comb begin
-        case (state)
-            S0, S4, S5:     row = 4'b0001; // Row0 active
-            S1, S6, S7:     row = 4'b0010; // Row1 active
-            S2, S8, S9:     row = 4'b0100; // Row2 active
-            S3, S10, S11:   row = 4'b1000; // Row3 active
-            default:        row = 4'b0001; // Default to Row0
-        endcase
-    end
+		// Power the rows
+        assign rowScan = row;
 
-    assign activeCol = col & {4{row[0] | row[1] | row[2] | row[3]}};
+		// Enabler turns 
+    	assign en = clk_en && keyPress &&
+                	( ((state == S1)  && (DBcounter == DEBOUNCE - 1)) ||
+                	  ((state == S4)  && (DBcounter == DEBOUNCE - 1)) ||
+                	  ((state == S7)  && (DBcounter == DEBOUNCE - 1)) ||
+                	  ((state == S10) && (DBcounter == DEBOUNCE - 1)) ); 
 
-    assign buttonPressed    = |activeCol;
-    assign oneButtonPressed = (activeCol != 0) &&
-                              ((activeCol & (activeCol - 1)) == 0);
-    
-    // Check if the original button is still pressed
-    assign originalStillPressed = (originalButton != 4'b0000) && 
-                                  ((activeCol & originalButton) == originalButton);
-
-    assign rowPressed[0] = (state inside {S0, S4, S5});
-    assign rowPressed[1] = (state inside {S1, S6, S7});
-    assign rowPressed[2] = (state inside {S2, S8, S9});
-    assign rowPressed[3] = (state inside {S3, S10, S11});
-
-    assign en = fsm_tick && (
-                (nextState == S5 && state == S4) ||
-                (nextState == S7 && state == S6) ||
-                (nextState == S9 && state == S8) ||
-                (nextState == S11 && state == S10)
-              );
-
-    always_comb begin
-        case (state)
-            S0:  nextState = buttonPressed && oneButtonPressed ? S4 : S1;
-            S1:  nextState = buttonPressed && oneButtonPressed ? S6 : S2;
-            S2:  nextState = buttonPressed && oneButtonPressed ? S8 : S3;
-            S3:  nextState = buttonPressed && oneButtonPressed ? S10 : S0;
-
-            S4:  nextState = (!buttonPressed || !oneButtonPressed) ? S1 :
-                            (counter >= DEBOUNCE_COUNT ? S5 : S4);
-            S5:  nextState = !originalStillPressed ? S1 : S5; 
-
-            S6:  nextState = (!buttonPressed || !oneButtonPressed) ? S2 :
-                            (counter >= DEBOUNCE_COUNT ? S7 : S6);
-            S7:  nextState = !originalStillPressed ? S2 : S7; 
-
-            S8:  nextState = (!buttonPressed || !oneButtonPressed) ? S3 :
-                            (counter >= DEBOUNCE_COUNT ? S9 : S8);
-            S9:  nextState = !originalStillPressed ? S3 : S9; 
-
-            S10: nextState = (!buttonPressed || !oneButtonPressed) ? S0 :
-                            (counter >= DEBOUNCE_COUNT ? S11 : S10);
-            S11: nextState = !originalStillPressed ? S0 : S11;
-
-            default: nextState = S0;
-        endcase
-    end
-
-    assign rc = {rowPressed, col};
 endmodule
