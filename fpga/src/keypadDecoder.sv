@@ -1,6 +1,6 @@
 // Josaphat Ngoga
 // jngoga@g.hmc.edu
-// 9/11/2025
+// 9/15/2025
 
 // This module receives the activated row and column and decodes it to detemine the 
 // hexadecimal value pressed.

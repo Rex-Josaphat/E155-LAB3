@@ -1,6 +1,6 @@
 // Josaphat Ngoga
 // jngoga@g.hmc.edu
-// 9/11/2025
+// 9/15/2025
 
 // This module receives the column input and scans rows to determine exactly
 // which row was acivated. These values are then sent to the decoding module 

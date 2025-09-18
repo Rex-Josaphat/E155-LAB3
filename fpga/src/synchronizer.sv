@@ -1,6 +1,6 @@
 // Josaphat Ngoga
 // jngoga@g.hmc.edu
-// 9/11/2025
+// 9/15/2025
 
 // This module synchronizes the sequence of the key columns from the keypad to eliminate metastability
 
