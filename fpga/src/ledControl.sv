@@ -10,7 +10,6 @@ module ledControl #(parameter  int SWITCH_COUNT = 100_000)(
         input logic clk, reset,
         input logic [3:0] sw1, sw2,
         output logic [1:0] onSeg, // Segment enablers, onSeg[0]: Left Display, onSeg[1]: Right Display, 
-        output logic [4:0] segSum,
         output logic [3:0] sevenSegIn);
 
         // Internal Logic

@@ -1,9 +1,10 @@
-module lab3_JN( 
-        input logic reset,
-        input logic [3:0] col_async,
-        output logic [3:0] row,
-        output logic [1:0] onSeg,
-        output logic [6:0] segDisp);
+module lab3_JN();
+        logic reset;
+		logic clk;
+        logic [3:0] col_async;
+        logic [3:0] row;
+        logic [1:0] onSeg;
+        logic [6:0] segDisp;
 
         // instantiate device under test
         lab3_JN dut(reset, col_async, row, onSeg, segDisp);
